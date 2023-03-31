@@ -10,7 +10,7 @@ const $Kenku = new KenkuFM();
  * A mapping of contexts to the action UUID and any settings
  * @type Record<string, {uuid: string, settings: {}}>
  */
-const actions = {};
+const visibleActions = {};
 
 // Define actions
 const playlistAction = new Action(Actions.playlist);
@@ -36,6 +36,33 @@ $SD.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
     $SD.getGlobalSettings();
 
     $Kenku.startPlaybackPolling();
+
+    // Actions with multiple states need to be tracked so their 
+    // states can be updated when the player states change.
+    for (const action of [soundboardAction, playbackAction, shuffleAction, repeatAction, muteAction]) {
+        action.onDidReceiveSettings(({ action, context, device, event, payload }) => {
+            const { settings, isInMultiAction } = payload;
+            // Only track the action if it's not in a multi-action
+            if (!isInMultiAction) {
+                visibleActions[context] = { uuid: action, settings: { id: settings.id } };
+                // Update the action state to match the current state of the player
+                setActionState(context, action, settings);
+            }
+        });
+        action.onWillAppear(({ action, context, device, event, payload }) => {
+            const { settings, isInMultiAction } = payload;
+            // Only track the action if it's not in a multi-action
+            if (!isInMultiAction) {
+                visibleActions[context] = { uuid: action, settings: { id: settings.id } };
+                // Update the action state to match the current state of the player
+                setActionState(context, action, settings);
+            }
+        });
+        action.onWillDisappear(({ action, context, device, event, payload }) => {
+            // Stop tracking if the action is no longer visible
+            delete visibleActions[context];
+        });
+    }
 });
 $SD.onDidReceiveGlobalSettings(({ payload }) => {
     const { settings } = payload;
@@ -103,32 +130,9 @@ soundboardAction.onKeyUp(async ({ action, context, device, event, payload }) => 
         $SD.logMessage(`Error playing/stopping sound: ${e}`);
     }
 });
-soundboardAction.onDidReceiveSettings(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onSoundboardPlaybackChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action, settings: { id: settings.id } };
-        setActionState(context, action, settings);
-    }
-});
-soundboardAction.onWillAppear(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onSoundboardPlaybackChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action, settings: { id: settings.id } };
-        setActionState(context, action, settings);
-    }
-});
-soundboardAction.onWillDisappear(({ action, context, device, event, payload }) => {
-    delete actions[context];
-});
 $Kenku.onSoundboardPlaybackChanged((sounds) => {
     // Get all soundboard actions and update their states
-    for (const [context, action] of Object.entries(actions)) {
+    for (const [context, action] of Object.entries(visibleActions)) {
         if (action.uuid == Actions.soundboard) {
             setActionState(context, action.uuid, action.settings);
         }
@@ -166,32 +170,9 @@ playbackAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         $SD.logMessage(`Error playing/pausing playback: ${e}`);
     }
 });
-playbackAction.onDidReceiveSettings(({ action, context, device, event, payload }) => {
-    const { isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackPlayingChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-playbackAction.onWillAppear(({ action, context, device, event, payload }) => {
-    const { isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackPlayingChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-playbackAction.onWillDisappear(({ action, context, device, event, payload }) => {
-    delete actions[context];
-});
 $Kenku.onPlaybackPlayingChanged(() => {
     // Get all playback actions and update their states
-    for (const [context, action] of Object.entries(actions)) {
+    for (const [context, action] of Object.entries(visibleActions)) {
         if (action.uuid === Actions.playback) {
             setActionState(context, action.uuid);
         }
@@ -257,32 +238,9 @@ shuffleAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         $SD.logMessage(`Error toggling shuffle: ${e}`);
     }
 });
-shuffleAction.onDidReceiveSettings(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackShuffleChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-shuffleAction.onWillAppear(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackShuffleChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-shuffleAction.onWillDisappear(({ action, context, device, event, payload }) => {
-    delete actions[context];
-});
 $Kenku.onPlaybackShuffleChanged(() => {
     // Get all shuffle actions and update their states
-    for (const [context, action] of Object.entries(actions)) {
+    for (const [context, action] of Object.entries(visibleActions)) {
         if (action.uuid == Actions.shuffle) {
             setActionState(context, action.uuid);
         }
@@ -333,32 +291,9 @@ repeatAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         $SD.logMessage(`Error setting repeat mode: ${e}`);
     }
 });
-repeatAction.onDidReceiveSettings(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackShuffleChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-repeatAction.onWillAppear(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackShuffleChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-repeatAction.onWillDisappear(({ action, context, device, event, payload }) => {
-    delete actions[context];
-});
 $Kenku.onPlaybackRepeatChanged((payload) => {
     // Get all repeat actions and update their states
-    for (const [context, action] of Object.entries(actions)) {
+    for (const [context, action] of Object.entries(visibleActions)) {
         if (action.uuid == Actions.repeat) {
             setActionState(context, action.uuid);
         }
@@ -490,32 +425,9 @@ muteAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         $SD.logMessage(`Error muting/unmuting the player: ${e}`);
     }
 });
-muteAction.onDidReceiveSettings(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackMuteChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-muteAction.onWillAppear(({ action, context, device, event, payload }) => {
-    const { settings, isInMultiAction } = payload;
-    // If the action is not in a multi-action button, track it 
-    // so any changes (handled in onPlaybackMuteChanged below)
-    // can update the state of the action.
-    if (!isInMultiAction) {
-        actions[context] = { uuid: action };
-        setActionState(context, action);
-    }
-});
-muteAction.onWillDisappear(({ action, context, device, event, payload }) => {
-    delete actions[context];
-});
 $Kenku.onPlaybackMuteChanged(() => {
     // Get all mute actions and update their states
-    for (const [context, action] of Object.entries(actions)) {
+    for (const [context, action] of Object.entries(visibleActions)) {
         if (action.uuid == Actions.mute) {
             setActionState(context, action.uuid);
         }
