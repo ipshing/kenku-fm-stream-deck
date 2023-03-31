@@ -2,4 +2,8 @@
 .vscode 
 
 # Exclude macOS Finder (System Explorer) View States
-.DS_Store
+**/.DS_Store
+
+# Distribution tool
+DistributionTool
+DistributionTool.exe
