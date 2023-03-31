@@ -1,5 +1,33 @@
 /// <reference path="constants.js" />
 
+// Referenced from https://spicyyoghurt.com/tools/easing-functions
+/**
+ * Calculates the next value in a sequence using a quadratic easing formula.
+ * @param {Number} initialValue The value at the start of the transition. This typically does not change.
+ * @param {Number} finalValue The value to reach by the end of the transition. This typically does not change.
+ * @param {Number} totalDuration The amount of time (in milliseconds) the transition should take. This typically does not change.
+ * @param {Number} elapsedTime How much time (in milliseconds) has passed since the start of the transition.
+ * @returns {Number} The next value in the sequence.
+ */
+function easeInOutQuad(initialValue, finalValue, totalDuration, elapsedTime) {
+    const delta = finalValue - initialValue;
+    if ((elapsedTime /= totalDuration / 2) < 1) return delta / 2 * elapsedTime * elapsedTime + initialValue;
+    return -delta / 2 * ((--elapsedTime) * (elapsedTime - 2) - 1) + initialValue;
+}
+/**
+ * Calculates the next value in a sequence using a cubic easing formula.
+ * @param {Number} initialValue The value at the start of the transition. This typically does not change.
+ * @param {Number} finalValue The value to reach by the end of the transition. This typically does not change.
+ * @param {Number} totalDuration The amount of time (in milliseconds) the transition should take. This typically does not change.
+ * @param {Number} elapsedTime How much time (in milliseconds) has passed since the start of the transition.
+ * @returns {Number} The next value in the sequence.
+ */
+function easeInOutCubic(initialValue, finalValue, totalDuration, elapsedTime) {
+    const delta = finalValue - initialValue;
+    if ((elapsedTime /= totalDuration / 2) < 1) return delta / 2 * elapsedTime * elapsedTime * elapsedTime + initialValue;
+    return delta / 2 * ((elapsedTime -= 2) * elapsedTime * elapsedTime + 2) + initialValue;
+}
+
 /**
  * 
  * @param {string} context A string that identifies the specific instance of the action.
@@ -46,6 +74,8 @@ function setActionState(context, action, settings) {
         case Actions.next:
         case Actions.volumeDown:
         case Actions.volumeUp:
+        case Actions.volumeSet:
+        case Actions.volumeFade:
             throw Error("This action does not have multiple states to manage");
         default:
             throw Error("Unrecognized action");

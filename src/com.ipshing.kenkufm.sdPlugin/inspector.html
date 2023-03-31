@@ -23,6 +23,20 @@
                         pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}"
                     />
                 </div>
+                <div class="sdpi-item hidden" type="range" id="volume">
+                    <div class="sdpi-item-label">Volume</div>
+                    <div class="sdpi-item-value">
+                        <input type="range" id="volumeRange" name="volume" value="50" min="0" max="100" step="1" />
+                        <span id="volumeLabel" class="range-label"></span>
+                    </div>
+                </div>
+                <div class="sdpi-item hidden" type="range" id="duration">
+                    <div class="sdpi-item-label">Fade Duration</div>
+                    <div class="sdpi-item-value">
+                        <input type="range" id="durationRange" name="duration" value="1000" min="100" max="2000" step="100" />
+                        <span id="durationLabel" class="range-label"></span>
+                    </div>
+                </div>
             </form>
             <details>
                 <summary>Advanced</summary>

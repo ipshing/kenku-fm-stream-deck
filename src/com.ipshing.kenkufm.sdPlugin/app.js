@@ -22,6 +22,8 @@ const shuffleAction = new Action(Actions.shuffle);
 const repeatAction = new Action(Actions.repeat);
 const volumeDownAction = new Action(Actions.volumeDown);
 const volumeUpAction = new Action(Actions.volumeUp);
+const volumeSetAction = new Action(Actions.volumeSet);
+const volumeFadeAction = new Action(Actions.volumeFade);
 const muteAction = new Action(Actions.mute);
 
 /**
@@ -392,6 +394,62 @@ volumeUpAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing next track: ${e}`);
+    }
+});
+volumeSetAction.onKeyUp(async ({ action, context, device, event, payload }) => {
+    const { settings } = payload;
+    try {
+        // Convert volume to 0...1 range
+        await $Kenku.setVolume(settings.volume / 100);
+    }
+    catch (e) {
+        $SD.showAlert(context);
+        $SD.logMessage(`Error setting volume: ${e}`);
+    }
+});
+let fadeTimer = undefined;
+volumeFadeAction.onKeyUp(async ({ action, context, device, event, payload }) => {
+    const { settings } = payload;
+    try {
+        // Get starting volume
+        const startingVol = $Kenku.volume;
+        // Get fade settings
+        const fadeTo = Number(settings.volume / 100);
+        const duration = Number(settings.duration);
+        const interval = 50; // milliseconds
+
+        // Clear out any previous timers
+        if (fadeTimer) {
+            clearInterval(fadeTimer);
+        }
+
+        let currentVol = startingVol;
+        let elapsedTime = 0;
+        fadeTimer = setInterval(async () => {
+            // Increment elapsedTime
+            elapsedTime += interval;
+            if (elapsedTime >= duration) {
+                // Stop the timer
+                clearInterval(fadeTimer);
+                // Set the final volume
+                currentVol = fadeTo;
+            }
+            else {
+                // Calculate the next volume step
+                currentVol = easeInOutQuad(startingVol, fadeTo, duration, elapsedTime);
+                if (isNaN(currentVol)) {
+                    clearInterval(fadeTimer);
+                    throw Error("Unable to calculate the next volume step.");
+                }
+            }
+
+            // Set the volume
+            await $Kenku.setVolume(currentVol);
+        }, interval);
+    }
+    catch (e) {
+        $SD.showAlert(context);
+        $SD.logMessage(`Error fading volume: ${e}`);
     }
 });
 

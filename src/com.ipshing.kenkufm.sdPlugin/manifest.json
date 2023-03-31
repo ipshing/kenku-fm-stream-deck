@@ -148,6 +148,28 @@
             "UUID": "com.ipshing.kenkufm.volume-up"
         },
         {
+            "Icon": "images/icons/volumeSet",
+            "Name": "Set Volume",
+            "States": [
+                {
+                    "Image": "images/actions/volumeSet"
+                }
+            ],
+            "Tooltip": "Set the volume level to a predefined value",
+            "UUID": "com.ipshing.kenkufm.volume-set"
+        },
+        {
+            "Icon": "images/icons/volumeFade",
+            "Name": "Fade Volume",
+            "States": [
+                {
+                    "Image": "images/actions/volumeFade"
+                }
+            ],
+            "Tooltip": "Fade the volume up or down to a predefined value",
+            "UUID": "com.ipshing.kenkufm.volume-fade"
+        },
+        {
             "Icon": "images/icons/mute",
             "Name": "Mute",
             "States": [

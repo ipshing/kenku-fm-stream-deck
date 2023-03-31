@@ -63,6 +63,8 @@ const Actions = Object.freeze({
     repeat: "com.ipshing.kenkufm.repeat",
     volumeDown: "com.ipshing.kenkufm.volume-down",
     volumeUp: "com.ipshing.kenkufm.volume-up",
+    volumeSet: "com.ipshing.kenkufm.volume-set",
+    volumeFade: "com.ipshing.kenkufm.volume-fade",
     mute: "com.ipshing.kenkufm.mute",
 });
 

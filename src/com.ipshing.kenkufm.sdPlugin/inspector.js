@@ -10,11 +10,27 @@ $PI.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
 
     // Load property inspector settings
     Utils.setFormValue(settings, piSettings);
+    // Update the range labels
+    updateLabels();
     // Request global settings
     $PI.getGlobalSettings();
-
     // Show the appropriate settings for the action
     showHideSettings(action);
+
+    // For the actions that use ranges, call $PI.setSettings
+    // if this is the first time the action has been loaded
+    // (indicated by an empty settings object).
+    if ((action === Actions.volumeSet || action === Actions.volumeFade) &&
+        (!settings || !settings.volume || !settings.duration)) {
+        const value = Utils.getFormValue(piSettings);
+        $PI.setSettings(value);
+    }
+
+    // Set up listener for ranges
+    const ranges = document.querySelectorAll("input[type='range']");
+    ranges.forEach((el, i) => {
+        el.addEventListener('input', updateLabels, false);
+    });
 
     // Set up listeners for local/global settings
     piSettings.addEventListener('input',
@@ -40,11 +56,36 @@ $PI.onDidReceiveGlobalSettings(({ payload }) => {
 
 function showHideSettings(action) {
     const idField = document.querySelector("#id");
+    const volume = document.querySelector("#volume");
+    const duration = document.querySelector("#duration");
 
-    if (action === Actions.playlist || action === Actions.soundboard) {
-        idField.classList.remove("hidden");
+    // Hide all fields to start
+    idField.classList.add("hidden");
+    volume.classList.add("hidden");
+    duration.classList.add("hidden");
+
+    // Show fields based on action
+    switch (action) {
+        case Actions.playlist:
+        case Actions.soundboard:
+            idField.classList.remove("hidden");
+            break;
+        case Actions.volumeSet:
+            volume.classList.remove("hidden");
+            break;
+        case Actions.volumeFade:
+            volume.classList.remove("hidden");
+            duration.classList.remove("hidden");
+            break;
     }
-    else {
-        idField.classList.add("hidden");
-    }
+}
+
+function updateLabels() {
+    const volumeRange = document.querySelector("#volumeRange");
+    const volumeLabel = document.querySelector("#volumeLabel");
+    const durationRange = document.querySelector("#durationRange");
+    const durationLabel = document.querySelector("#durationLabel");
+
+    volumeLabel.textContent = `${volumeRange.value}%`;
+    durationLabel.textContent = `${durationRange.value} ms`;
 }
