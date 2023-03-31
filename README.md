@@ -4,20 +4,18 @@
 
 [Stream Deck](https://www.elgato.com/en/stream-deck) plugin for [Kenku FM](https://kenku.fm).
 
-<p align="center">
-  <img src="./docs/example.png" alt="Kenku FM Stream Deck Plugin" width="738">
-</p>
+![Kenku FM Stream Deck Plugin](./docs/example.png)
 
-## Docs
+This plugin is based on the official Kenku FM Stream Deck Plugin. It is primarily a project for me to learn how to develop plugins for stream deck. All features from the official plugin are present, plus a few new ones (see below for details). The most notable difference is the separation of the playback controls into separate actions. This was intended to be able to test button states as well as more visually distinguish actions within multi-action buttons.
 
-Docs on using the plugin can be found [here](https://www.kenku.fm/docs/using-kenku-remote).
+## Set Volume
 
-## Licence
+This new action allows setting the volume to a predetermined value. This can be particularly useful when placed in a multi-action button that issues a series of commands to the Kenku FM player. For example, a multi-action button could be set up to set the volume to 15%, set the repeat mode to "Repeat Track", then play a specific playlist or track.
 
-Kenku FM is licensed under the GNU General Public Licence v3.0.
+![Set Volume example](./docs/set_volume.png)
 
-## Contributing
+## Fade Volume
 
-For our own wellbeing Kenku FM follows a similar contribution policy projects like [Litestream](https://github.com/benbjohnson/litestream#open-source-not-open-contribution).
+This new action allows easing the volume from it's current level to a predetermined value over a desired period of time (from 0.5s – 2s). This can be particularly useful when placed in a multi-action button that issues a series of commands to the Kenku FM player. For example, a sequence could be set up to fade the volume to 0% and *then* stop playback to avoid a harsh cut-off of the audio.
 
-This means we are open to pull requests for bug fixes only. Pull requests for new features will not be accepted due to the burden of maintaining these features into the future.
+![Fade Volume example](./docs/fade_volume.png)
