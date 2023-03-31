@@ -1,0 +1,5 @@
+# vscode
+.vscode 
+
+# Exclude macOS Finder (System Explorer) View States
+.DS_Store

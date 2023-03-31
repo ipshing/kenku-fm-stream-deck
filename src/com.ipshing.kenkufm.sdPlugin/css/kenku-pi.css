@@ -1,0 +1,32 @@
+/** 
+ * 
+ * These styles augment/override the default sdpi.css styles 
+ *
+ */
+
+.sdpi-wrapper {
+    margin-right: 0;
+}
+
+.sdpi-item {
+    max-width: unset;
+    display: flex;
+    align-items: center;
+}
+
+.sdpi-item > .sdpi-item-label {
+    min-height: unset !important;
+}
+
+.sdpi-item-value {
+    margin-right: 0;
+}
+
+.sdpi-item-value > :last-of-type,
+.sdpi-item-value:last-child {
+    margin-bottom: 0px;
+}
+
+details {
+    padding: 8px 0px;
+}

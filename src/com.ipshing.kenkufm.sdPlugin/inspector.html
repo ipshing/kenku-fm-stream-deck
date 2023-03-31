@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <title>com.ipshing.kenkufm Property Inspector</title>
+        <link rel="stylesheet" href="sdk/css/sdpi.css" />
+        <link rel="stylesheet" href="css/kenku-pi.css" />
+    </head>
+
+    <body>
+        <div class="sdpi-wrapper">
+            <form id="pi-settings">
+                <div class="sdpi-item hidden" id="id">
+                    <div class="sdpi-item-label">ID</div>
+                    <input
+                        class="sdpi-item-value"
+                        type="text"
+                        name="id"
+                        required
+                        pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}"
+                    />
+                </div>
+            </form>
+            <details>
+                <summary>Advanced</summary>
+                <form id="global-settings">
+                    <div class="sdpi-item">
+                        <div class="sdpi-item-label">Address</div>
+                        <input class="sdpi-item-value" name="address" value="127.0.0.1" placeholder="e.g. 127.0.0.1" required pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" />
+                    </div>
+                    <div class="sdpi-item">
+                        <div class="sdpi-item-label">Port</div>
+                        <input class="sdpi-item-value" name="port" value="3333" placeholder="e.g. 3333" required pattern="\d+" />
+                    </div>
+                </form>
+            </details>
+        </div>
+
+        <!-- Stream Deck SDK -->
+        <script src="sdk/js/constants.js"></script>
+        <script src="sdk/js/prototypes.js"></script>
+        <script src="sdk/js/timers.js"></script>
+        <script src="sdk/js/utils.js"></script>
+        <script src="sdk/js/events.js"></script>
+        <script src="sdk/js/api.js"></script>
+        <script src="sdk/js/property-inspector.js"></script>
+        <script src="sdk/js/dynamic-styles.js"></script>
+
+        <!-- Plugin Libs -->
+        <script src="js/constants.js"></script>
+
+        <!-- Property Inspector Source -->
+        <script src="inspector.js"></script>
+    </body>
+</html>

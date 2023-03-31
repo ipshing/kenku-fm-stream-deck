@@ -1,0 +1,167 @@
+{
+    "SDKVersion": 2,
+    "Author": "ipshing",
+    "CodePath": "app.html",
+    "Description": "Stream Deck plugin for Kenku FM",
+    "Name": "Kenku FM",
+    "Icon": "images/pluginIcon",
+    "URL": "https://www.kenku.fm",
+    "Version": "1.0.0",
+    "Software": {
+        "MinimumVersion": "5.0"
+    },
+    "OS": [
+        {
+            "Platform": "mac",
+            "MinimumVersion": "10.11"
+        },
+        {
+            "Platform": "windows",
+            "MinimumVersion": "10"
+        }
+    ],
+    "Category": "Kenku FM",
+    "CategoryIcon": "images/categoryIcon",
+    "PropertyInspectorPath": "inspector.html",
+    "Actions": [
+        {
+            "Icon": "images/icons/playlist",
+            "Name": "Play Playlist",
+            "States": [
+                {
+                    "Image": "images/actions/playlist"
+                }
+            ],
+            "Tooltip": "Play a playlist or track",
+            "UUID": "com.ipshing.kenkufm.playlist"
+        },
+        {
+            "Icon": "images/icons/soundboard",
+            "Name": "Play/Stop Soundboard",
+            "States": [
+                {
+                    "Image": "images/actions/soundboard",
+                    "Name": "Play"
+                },
+                {
+                    "Image": "images/actions/stop",
+                    "Name": "Stop"
+                }
+            ],
+            "Tooltip": "Play or stop a soundboard or sound",
+            "UUID": "com.ipshing.kenkufm.soundboard"
+        },
+        {
+            "Icon": "images/icons/playback",
+            "Name": "Play/Pause",
+            "States": [
+                {
+                    "Image": "images/actions/play",
+                    "Name": "Play"
+                },
+                {
+                    "Image": "images/actions/pause",
+                    "Name": "Pause"
+                }
+            ],
+            "Tooltip": "Play or pause playlist playback",
+            "UUID": "com.ipshing.kenkufm.playback"
+        },
+        {
+            "Icon": "images/icons/previous",
+            "Name": "Play Previous Track",
+            "States": [
+                {
+                    "Image": "images/actions/previous"
+                }
+            ],
+            "Tooltip": "Play the previous track in the playlist",
+            "UUID": "com.ipshing.kenkufm.previous"
+        },
+        {
+            "Icon": "images/icons/next",
+            "Name": "Play Next Track",
+            "States": [
+                {
+                    "Image": "images/actions/next"
+                }
+            ],
+            "Tooltip": "Play the next track in the playlist",
+            "UUID": "com.ipshing.kenkufm.next"
+        },
+        {
+            "Icon": "images/icons/shuffle",
+            "Name": "Shuffle",
+            "States": [
+                {
+                    "Image": "images/actions/shuffleOff",
+                    "Name": "Shuffle Off"
+                },
+                {
+                    "Image": "images/actions/shuffleOn",
+                    "Name": "Shuffle On"
+                }
+            ],
+            "Tooltip": "Toggle the shuffling of the current playlist",
+            "UUID": "com.ipshing.kenkufm.shuffle"
+        },
+        {
+            "Icon": "images/icons/repeat",
+            "Name": "Repeat",
+            "States": [
+                {
+                    "Image": "images/actions/repeatOff",
+                    "Name": "Repeat Off"
+                },
+                {
+                    "Image": "images/actions/repeatPlaylist",
+                    "Name": "Repeat Playlist"
+                },
+                {
+                    "Image": "images/actions/repeatTrack",
+                    "Name": "Repeat Track"
+                }
+            ],
+            "Tooltip": "Cycle the repeat mode of the current playlist",
+            "UUID": "com.ipshing.kenkufm.repeat"
+        },
+        {
+            "Icon": "images/icons/volumeDown",
+            "Name": "Decrease Volume",
+            "States": [
+                {
+                    "Image": "images/actions/volumeDown"
+                }
+            ],
+            "Tooltip": "Decrease the volume of the playlist playback",
+            "UUID": "com.ipshing.kenkufm.volume-down"
+        },
+        {
+            "Icon": "images/icons/volumeUp",
+            "Name": "Increase Volume",
+            "States": [
+                {
+                    "Image": "images/actions/volumeUp"
+                }
+            ],
+            "Tooltip": "Increase the volume of the playlist playback",
+            "UUID": "com.ipshing.kenkufm.volume-up"
+        },
+        {
+            "Icon": "images/icons/mute",
+            "Name": "Mute",
+            "States": [
+                {
+                    "Image": "images/actions/muteOff",
+                    "Name": "Mute Off"
+                },
+                {
+                    "Image": "images/actions/muteOn",
+                    "Name": "Mute On"
+                }
+            ],
+            "Tooltip": "Mute the playlist playback",
+            "UUID": "com.ipshing.kenkufm.mute"
+        }
+    ]
+}
