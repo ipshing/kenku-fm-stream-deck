@@ -37,7 +37,7 @@ $SD.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
 
     $Kenku.startPlaybackPolling();
 
-    // Actions with multiple states need to be tracked so their 
+    // Actions with multiple states need to be tracked so their
     // states can be updated when the player states change.
     for (const action of [soundboardAction, playbackAction, shuffleAction, repeatAction, muteAction]) {
         action.onDidReceiveSettings(({ action, context, device, event, payload }) => {
@@ -73,27 +73,26 @@ $SD.onDidReceiveGlobalSettings(({ payload }) => {
         // Set using default values
         $SD.setGlobalSettings({
             address: $Kenku.remoteAddress,
-            port: $Kenku.remotePort
+            port: $Kenku.remotePort,
         });
-        $SD.logMessage(`${logMsg} using default values`)
+        $SD.logMessage(`${logMsg} using default values`);
     }
     // Load received values into $Kenku properties
     else {
         $Kenku.remoteAddress = settings.address;
         $Kenku.remotePort = settings.port;
-        $SD.logMessage(`${logMsg} loading saved values`)
+        $SD.logMessage(`${logMsg} loading saved values`);
     }
 });
 
-// 
+//
 // PLAYLIST EVENTS
 //
 playlistAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     const { settings } = payload;
     try {
         await $Kenku.startPlaylist(settings.id);
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing playlist ${settings.id}: ${e}`);
     }
@@ -115,17 +114,14 @@ soundboardAction.onKeyUp(async ({ action, context, device, event, payload }) => 
         if (currentState === States.soundboardPlay) {
             // Start the playback
             await $Kenku.startSoundboard(settings.id);
-        }
-        else if (currentState === States.soundboardStop) {
+        } else if (currentState === States.soundboardStop) {
             // Stop the playback
             await $Kenku.stopSoundboard(settings.id);
-        }
-        else {
+        } else {
             // Shouldn't happen, but throw an error
             throw new Error("Unknown state");
         }
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing/stopping sound: ${e}`);
     }
@@ -141,7 +137,7 @@ $Kenku.onSoundboardPlaybackChanged((sounds) => {
 
 //
 // PLAY/PAUSE EVENTS
-// 
+//
 playbackAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     const { settings, state, userDesiredState, isInMultiAction } = payload;
     try {
@@ -155,17 +151,14 @@ playbackAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         if (currentState === States.playbackPlay) {
             // Start the playback
             await $Kenku.play();
-        }
-        else if (currentState === States.playbackPause) {
+        } else if (currentState === States.playbackPause) {
             // Stop the playback
             await $Kenku.pause();
-        }
-        else {
+        } else {
             // Shouldn't happen, but throw an error
             throw new Error("Unknown state");
         }
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing/pausing playback: ${e}`);
     }
@@ -185,8 +178,7 @@ $Kenku.onPlaybackPlayingChanged(() => {
 previousAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     try {
         await $Kenku.playPrevious();
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing previous track: ${e}`);
     }
@@ -194,8 +186,7 @@ previousAction.onKeyUp(async ({ action, context, device, event, payload }) => {
 nextAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     try {
         await $Kenku.playNext();
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing next track: ${e}`);
     }
@@ -223,17 +214,14 @@ shuffleAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         if (newState === States.shuffleOff) {
             // Turn off shuffle
             await $Kenku.shuffle(false);
-        }
-        else if (newState === States.shuffleOn) {
+        } else if (newState === States.shuffleOn) {
             // Turn on shuffle
             await $Kenku.shuffle(true);
-        }
-        else {
+        } else {
             // Shouldn't happen, but throw an error
             throw new Error("Unknown state");
         }
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error toggling shuffle: ${e}`);
     }
@@ -272,21 +260,17 @@ repeatAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         if (newState === States.repeatOff) {
             // Turn off repeat
             await $Kenku.setRepeatMode("off");
-        }
-        else if (newState === States.repeatPlaylist) {
+        } else if (newState === States.repeatPlaylist) {
             // Set repeat to playlist
             await $Kenku.setRepeatMode("playlist");
-        }
-        else if (newState === States.repeatTrack) {
+        } else if (newState === States.repeatTrack) {
             // Set repeat to track
             await $Kenku.setRepeatMode("track");
-        }
-        else {
+        } else {
             // Shouldn't happen, but throw an error
             throw new Error("Unknown state");
         }
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error setting repeat mode: ${e}`);
     }
@@ -310,9 +294,9 @@ volumeDownAction.onKeyUp(async ({ action, context, device, event, payload }) => 
         if (volume < 0) {
             volume = 0;
         }
+        await $Kenku.mute(false);
         await $Kenku.setVolume(volume);
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing previous track: ${e}`);
     }
@@ -324,9 +308,9 @@ volumeUpAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         if (volume > 1) {
             volume = 1;
         }
+        await $Kenku.mute(false);
         await $Kenku.setVolume(volume);
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error playing next track: ${e}`);
     }
@@ -334,10 +318,10 @@ volumeUpAction.onKeyUp(async ({ action, context, device, event, payload }) => {
 volumeSetAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     const { settings } = payload;
     try {
+        await $Kenku.mute(false);
         // Convert volume to 0...1 range
         await $Kenku.setVolume(settings.volume / 100);
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error setting volume: ${e}`);
     }
@@ -346,6 +330,12 @@ let fadeTimer = undefined;
 volumeFadeAction.onKeyUp(async ({ action, context, device, event, payload }) => {
     const { settings } = payload;
     try {
+        // If muted, set the volume to 0 and unmute so the fade starts from there
+        if ($Kenku.isMuted) {
+            await $Kenku.setVolume(0);
+            await $Kenku.mute(false);
+        }
+
         // Get starting volume
         const startingVol = $Kenku.volume;
         // Get fade settings
@@ -368,8 +358,7 @@ volumeFadeAction.onKeyUp(async ({ action, context, device, event, payload }) => 
                 clearInterval(fadeTimer);
                 // Set the final volume
                 currentVol = fadeTo;
-            }
-            else {
+            } else {
                 // Calculate the next volume step
                 currentVol = easeInOutQuad(startingVol, fadeTo, duration, elapsedTime);
                 if (isNaN(currentVol)) {
@@ -381,8 +370,7 @@ volumeFadeAction.onKeyUp(async ({ action, context, device, event, payload }) => 
             // Set the volume
             await $Kenku.setVolume(currentVol);
         }, interval);
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error fading volume: ${e}`);
     }
@@ -410,17 +398,14 @@ muteAction.onKeyUp(async ({ action, context, device, event, payload }) => {
         if (newState === States.muteOff) {
             // Unmute the player
             await $Kenku.mute(false);
-        }
-        else if (newState === States.muteOn) {
+        } else if (newState === States.muteOn) {
             // Mute the player
             await $Kenku.mute(true);
-        }
-        else {
+        } else {
             // Shouldn't happen, but throw an error
             throw new Error("Unknown state");
         }
-    }
-    catch (e) {
+    } catch (e) {
         $SD.showAlert(context);
         $SD.logMessage(`Error muting/unmuting the player: ${e}`);
     }
