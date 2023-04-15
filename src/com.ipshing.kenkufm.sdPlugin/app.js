@@ -39,23 +39,44 @@ $SD.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
 
     // Actions with multiple states need to be tracked so their
     // states can be updated when the player states change.
-    for (const action of [soundboardAction, playbackAction, shuffleAction, repeatAction, muteAction]) {
+    // Also track volume up/down actions to display current level.
+    for (const action of [soundboardAction, playbackAction, shuffleAction, repeatAction, muteAction, volumeUpAction, volumeDownAction]) {
         action.onDidReceiveSettings(({ action, context, device, event, payload }) => {
             const { settings, isInMultiAction } = payload;
             // Only track the action if it's not in a multi-action
             if (!isInMultiAction) {
-                visibleActions[context] = { uuid: action, settings: { id: settings.id } };
+                visibleActions[context] = { uuid: action, settings: settings };
                 // Update the action state to match the current state of the player
-                setActionState(context, action, settings);
+                if ([Actions.soundboard, Actions.playback, Actions.shuffle, Actions.repeat, Actions.mute].includes(action)) {
+                    setActionState(context, action, settings);
+                }
+                // Update title for volume up/down actions
+                if ([Actions.volumeUp, Actions.volumeDown].includes(action)) {
+                    let title = "";
+                    if (settings.setTitle !== undefined) {
+                        title = `${Math.round($Kenku.volume * 100)}%`;
+                    }
+                    $SD.setTitle(context, title);
+                }
             }
         });
         action.onWillAppear(({ action, context, device, event, payload }) => {
             const { settings, isInMultiAction } = payload;
             // Only track the action if it's not in a multi-action
             if (!isInMultiAction) {
-                visibleActions[context] = { uuid: action, settings: { id: settings.id } };
+                visibleActions[context] = { uuid: action, settings: settings };
                 // Update the action state to match the current state of the player
-                setActionState(context, action, settings);
+                if ([Actions.soundboard, Actions.playback, Actions.shuffle, Actions.repeat, Actions.mute].includes(action)) {
+                    setActionState(context, action, settings);
+                }
+                // Update title for volume up/down actions
+                if ([Actions.volumeUp, Actions.volumeDown].includes(action)) {
+                    let title = "";
+                    if (settings.setTitle !== undefined) {
+                        title = `${Math.round($Kenku.volume * 100)}%`;
+                    }
+                    $SD.setTitle(context, title);
+                }
             }
         });
         action.onWillDisappear(({ action, context, device, event, payload }) => {
@@ -129,7 +150,7 @@ soundboardAction.onKeyUp(async ({ action, context, device, event, payload }) => 
 $Kenku.onSoundboardPlaybackChanged((sounds) => {
     // Get all soundboard actions and update their states
     for (const [context, action] of Object.entries(visibleActions)) {
-        if (action.uuid == Actions.soundboard) {
+        if (action.uuid === Actions.soundboard) {
             setActionState(context, action.uuid, action.settings);
         }
     }
@@ -229,7 +250,7 @@ shuffleAction.onKeyUp(async ({ action, context, device, event, payload }) => {
 $Kenku.onPlaybackShuffleChanged(() => {
     // Get all shuffle actions and update their states
     for (const [context, action] of Object.entries(visibleActions)) {
-        if (action.uuid == Actions.shuffle) {
+        if (action.uuid === Actions.shuffle) {
             setActionState(context, action.uuid);
         }
     }
@@ -278,7 +299,7 @@ repeatAction.onKeyUp(async ({ action, context, device, event, payload }) => {
 $Kenku.onPlaybackRepeatChanged((payload) => {
     // Get all repeat actions and update their states
     for (const [context, action] of Object.entries(visibleActions)) {
-        if (action.uuid == Actions.repeat) {
+        if (action.uuid === Actions.repeat) {
             setActionState(context, action.uuid);
         }
     }
@@ -375,6 +396,18 @@ volumeFadeAction.onKeyUp(async ({ action, context, device, event, payload }) => 
         $SD.logMessage(`Error fading volume: ${e}`);
     }
 });
+$Kenku.onPlaybackVolumeChanged(() => {
+    // Get all volume up/down actions and update their titles
+    for (const [context, action] of Object.entries(visibleActions)) {
+        if (action.uuid === Actions.volumeUp || action.uuid === Actions.volumeDown) {
+            let title = "";
+            if (action.settings.setTitle !== undefined) {
+                title = `${Math.round($Kenku.volume * 100)}%`;
+            }
+            $SD.setTitle(context, title);
+        }
+    }
+});
 
 //
 // MUTE EVENTS
@@ -413,7 +446,7 @@ muteAction.onKeyUp(async ({ action, context, device, event, payload }) => {
 $Kenku.onPlaybackMuteChanged(() => {
     // Get all mute actions and update their states
     for (const [context, action] of Object.entries(visibleActions)) {
-        if (action.uuid == Actions.mute) {
+        if (action.uuid === Actions.mute) {
             setActionState(context, action.uuid);
         }
     }

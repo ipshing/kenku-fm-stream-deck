@@ -20,8 +20,7 @@ $PI.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
     // For the actions that use ranges, call $PI.setSettings
     // if this is the first time the action has been loaded
     // (indicated by an empty settings object).
-    if ((action === Actions.volumeSet || action === Actions.volumeFade) &&
-        (!settings || !settings.volume || !settings.duration)) {
+    if ((action === Actions.volumeSet || action === Actions.volumeFade) && (!settings || !settings.volume || !settings.duration)) {
         const value = Utils.getFormValue(piSettings);
         $PI.setSettings(value);
     }
@@ -29,17 +28,19 @@ $PI.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) =
     // Set up listener for ranges
     const ranges = document.querySelectorAll("input[type='range']");
     ranges.forEach((el, i) => {
-        el.addEventListener('input', updateLabels, false);
+        el.addEventListener("input", updateLabels, false);
     });
 
     // Set up listeners for local/global settings
-    piSettings.addEventListener('input',
+    piSettings.addEventListener(
+        "input",
         Utils.debounce(150, () => {
             const value = Utils.getFormValue(piSettings);
             $PI.setSettings(value);
         })
     );
-    globalSettings.addEventListener('input',
+    globalSettings.addEventListener(
+        "input",
         Utils.debounce(150, () => {
             const value = Utils.getFormValue(globalSettings);
             $PI.setGlobalSettings(value);
@@ -58,11 +59,13 @@ function showHideSettings(action) {
     const idField = document.querySelector("#id");
     const volume = document.querySelector("#volume");
     const duration = document.querySelector("#duration");
+    const title = document.querySelector("#title");
 
     // Hide all fields to start
     idField.classList.add("hidden");
     volume.classList.add("hidden");
     duration.classList.add("hidden");
+    title.classList.add("hidden");
 
     // Show fields based on action
     switch (action) {
@@ -76,6 +79,10 @@ function showHideSettings(action) {
         case Actions.volumeFade:
             volume.classList.remove("hidden");
             duration.classList.remove("hidden");
+            break;
+        case Actions.volumeUp:
+        case Actions.volumeDown:
+            title.classList.remove("hidden");
             break;
     }
 }

@@ -11,8 +11,8 @@
  */
 function easeInOutQuad(initialValue, finalValue, totalDuration, elapsedTime) {
     const delta = finalValue - initialValue;
-    if ((elapsedTime /= totalDuration / 2) < 1) return delta / 2 * elapsedTime * elapsedTime + initialValue;
-    return -delta / 2 * ((--elapsedTime) * (elapsedTime - 2) - 1) + initialValue;
+    if ((elapsedTime /= totalDuration / 2) < 1) return (delta / 2) * elapsedTime * elapsedTime + initialValue;
+    return (-delta / 2) * (--elapsedTime * (elapsedTime - 2) - 1) + initialValue;
 }
 /**
  * Calculates the next value in a sequence using a cubic easing formula.
@@ -24,12 +24,12 @@ function easeInOutQuad(initialValue, finalValue, totalDuration, elapsedTime) {
  */
 function easeInOutCubic(initialValue, finalValue, totalDuration, elapsedTime) {
     const delta = finalValue - initialValue;
-    if ((elapsedTime /= totalDuration / 2) < 1) return delta / 2 * elapsedTime * elapsedTime * elapsedTime + initialValue;
-    return delta / 2 * ((elapsedTime -= 2) * elapsedTime * elapsedTime + 2) + initialValue;
+    if ((elapsedTime /= totalDuration / 2) < 1) return (delta / 2) * elapsedTime * elapsedTime * elapsedTime + initialValue;
+    return (delta / 2) * ((elapsedTime -= 2) * elapsedTime * elapsedTime + 2) + initialValue;
 }
 
 /**
- * 
+ *
  * @param {string} context A string that identifies the specific instance of the action.
  * @param {string} action A string representing the UUID of the action (as defined in the manifest.json file).
  * @param {object} [settings] Optional. Any settings related to the action that will be used in setting the state.
